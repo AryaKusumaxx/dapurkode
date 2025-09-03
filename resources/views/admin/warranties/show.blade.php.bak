@@ -1,0 +1,497 @@
+@extends('layouts.admin.app')
+
+@section('title', 'Detail Garansi')
+
+@section('content')
+<div class="container mx-auto px-4 py-6">
+    <!-- Page Heading -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Detail Garansi #{{ $warranty->id }}</h1>
+            <p class="mt-2">
+                @if($warranty->isActive())
+                    <span class="bg-green-500 text-white py-1 px-3 rounded-full text-xs">Aktif</span>
+                    <span class="ml-2 text-gray-600">Berlaku hingga: {{ $warranty->end_date->format('d M Y') }}</span>
+                @else
+                    <span class="bg-red-500 text-white py-1 px-3 rounded-full text-xs">Kadaluarsa</span>
+                    <span class="ml-2 text-gray-600">Berakhir pada: {{ $warranty->end_date->format('d M Y') }}</span>
+                @endif
+            </p>
+        </div>
+        <div class="mt-4 md:mt-0 flex">
+            <a href="{{ route('admin.warranties.download', $warranty) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-200 active:bg-blue-600 transition mr-2">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Download Sertifikat
+            </a>
+            <a href="{{ route('admin.warranties.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-200 active:bg-gray-600 transition">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Kembali
+            </a>
+        </div>
+    </div>
+
+    @if(session('success'))
+    <div x-data="{ show: true }" 
+         x-init="setTimeout(() => show = false, 5000)" 
+         x-show="show" 
+         class="bg-green-50 border-l-4 border-green-400 p-4 mb-6 rounded shadow-sm" role="alert">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-green-700">{{ session('success') }}</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <div class="-mx-1.5 -my-1.5">
+                    <button @click="show = false" class="inline-flex text-green-500 hover:text-green-600 focus:outline-none">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div x-data="{ show: true }" 
+         x-init="setTimeout(() => show = false, 5000)" 
+         x-show="show" 
+         class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded shadow-sm" role="alert">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-red-700">{{ session('error') }}</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <div class="-mx-1.5 -my-1.5">
+                    <button @click="show = false" class="inline-flex text-red-500 hover:text-red-600 focus:outline-none">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Content Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+            <!-- Warranty Details -->
+            <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+                <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-gray-50">
+                    <h2 class="text-lg font-semibold text-blue-600">Informasi Garansi</h2>
+                    <div>
+                        <button type="button" class="inline-flex items-center px-3 py-2 border border-yellow-400 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 text-xs font-medium rounded transition" data-toggle="modal" data-target="#statusModal">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg> Edit Status
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white border-l-4 border-blue-500 rounded-lg shadow-sm p-4">
+                            <h3 class="font-medium text-blue-600 mb-3">Informasi Produk</h3>
+                            @if($warranty->orderItem && $warranty->orderItem->product)
+                                <div class="flex mb-3">
+                                    <div class="mr-3 flex-shrink-0">
+                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0v10l-8 4m-8-4V7m8 4v10M4 7l8 4m8-4l-8 4m8 4l-8 4m-8-4l8 4"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 mb-1">{{ $warranty->orderItem->product->name }}</h4>
+                                        @if($warranty->orderItem->variant_name)
+                                            <p class="text-sm text-gray-600">Varian: {{ $warranty->orderItem->variant_name }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="mr-3 flex-shrink-0">
+                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-700"><span class="font-medium">No. Seri:</span> {{ $warranty->serial_number ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
+                            @else
+                                <p class="text-gray-500">Produk tidak tersedia</p>
+                            @endif
+                        </div>
+                        
+                        <div class="bg-white border-l-4 border-teal-500 rounded-lg shadow-sm p-4">
+                            <h3 class="font-medium text-teal-600 mb-3">Informasi Customer</h3>
+                            @if($warranty->orderItem && $warranty->orderItem->order && $warranty->orderItem->order->user)
+                                <div class="flex">
+                                    <div class="mr-3 flex-shrink-0">
+                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 mb-1">{{ $warranty->orderItem->order->user->name }}</h4>
+                                        <p class="text-sm text-gray-600">{{ $warranty->orderItem->order->user->email }}</p>
+                                        @if($warranty->orderItem->order->user->phone_number)
+                                            <p class="text-sm text-gray-600">{{ $warranty->orderItem->order->user->phone_number }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <p class="text-gray-500">Customer tidak tersedia</p>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white border-l-4 border-green-500 rounded-lg shadow-sm p-4">
+                        <h3 class="font-medium text-green-600 mb-3">Detail Periode Garansi</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="text-center border border-gray-200 rounded-lg p-3">
+                                <div class="text-xs text-gray-500 mb-1">Tanggal Mulai</div>
+                                <div class="font-semibold text-gray-800">{{ $warranty->start_date->format('d M Y') }}</div>
+                            </div>
+                            <div class="text-center border border-gray-200 rounded-lg p-3">
+                                <div class="text-xs text-gray-500 mb-1">Tanggal Berakhir</div>
+                                <div class="font-semibold text-gray-800">{{ $warranty->end_date->format('d M Y') }}</div>
+                            </div>
+                        </div>
+                                    
+                                    @if($warranty->isActive() && !$warranty->isExpired())
+                                        <div class="text-center border rounded py-3 mb-3 bg-light">
+                                            <div class="h4 mb-0 font-weight-bold text-gray-800">{{ $remainingDays }} <span class="small">hari tersisa</span></div>
+                                            <div class="progress mt-2" style="height: 15px;">
+                                                @php
+                                                    $totalDays = $warranty->start_date->diffInDays($warranty->end_date);
+                                                    $percentRemaining = min(100, max(0, ($remainingDays / $totalDays) * 100));
+                                                    
+                                                    // Determine color based on percentage
+                                                    if ($percentRemaining > 70) {
+                                                        $barColor = 'bg-success';
+                                                    } elseif ($percentRemaining > 30) {
+                                                        $barColor = 'bg-info';
+                                                    } elseif ($percentRemaining > 15) {
+                                                        $barColor = 'bg-warning';
+                                                    } else {
+                                                        $barColor = 'bg-danger';
+                                                    }
+                                                @endphp
+                                                <div class="progress-bar {{ $barColor }}" role="progressbar" style="width: {{ $percentRemaining }}%" 
+                                                    aria-valuenow="{{ $percentRemaining }}" aria-valuemin="0" aria-valuemax="100">
+                                                    {{ round($percentRemaining) }}%
+                                                </div>
+                                            </div>
+                                            <div class="small text-muted mt-2">Total periode: {{ $totalDays }} hari</div>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-danger text-center mb-3">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> Garansi ini sudah tidak aktif
+                                        </div>
+                                    @endif
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#statusModal">
+                                            <i class="fas fa-edit"></i> Edit Status
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-left-secondary shadow-sm mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-secondary">Catatan</h6>
+                        </div>
+                        <div class="card-body">
+                            @if($warranty->notes)
+                                <div class="notes-container" style="max-height: 200px; overflow-y: auto; background-color: #f8f9fc; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace;">
+                                    {!! nl2br(e($warranty->notes)) !!}
+                                </div>
+                            @else
+                                <div class="text-center py-5">
+                                    <i class="fas fa-sticky-note fa-3x text-gray-300 mb-3"></i>
+                                    <p class="text-muted">Belum ada catatan untuk garansi ini</p>
+                                    <button class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#addNoteModal">
+                                        <i class="fas fa-plus"></i> Tambah Catatan
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <div class="card border-left-info shadow-sm mb-4">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="m-0 font-weight-bold text-info">Riwayat Order</h6>
+                            @if($warranty->orderItem && $warranty->orderItem->order)
+                                <a href="{{ route('admin.orders.show', $warranty->orderItem->order->id) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Lihat Detail Order
+                                </a>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            @if($warranty->orderItem && $warranty->orderItem->order)
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="text-center border rounded py-2">
+                                            <div class="small text-muted">Order ID</div>
+                                            <div class="font-weight-bold">#{{ $warranty->orderItem->order->id }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center border rounded py-2">
+                                            <div class="small text-muted">Tanggal</div>
+                                            <div class="font-weight-bold">{{ $warranty->orderItem->order->created_at->format('d M Y') }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center border rounded py-2">
+                                            <div class="small text-muted">Status</div>
+                                            <div>
+                                                @switch($warranty->orderItem->order->status)
+                                                    @case('pending')
+                                                        <span class="badge badge-warning">Pending</span>
+                                                        @break
+                                                    @case('processing')
+                                                        <span class="badge badge-info">Processing</span>
+                                                        @break
+                                                    @case('completed')
+                                                        <span class="badge badge-success">Completed</span>
+                                                        @break
+                                                    @case('cancelled')
+                                                        <span class="badge badge-danger">Cancelled</span>
+                                                        @break
+                                                    @default
+                                                        <span class="badge badge-secondary">{{ $warranty->orderItem->order->status }}</span>
+                                                @endswitch
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center border rounded py-2">
+                                            <div class="small text-muted">Total</div>
+                                            <div class="font-weight-bold">Rp {{ number_format($warranty->orderItem->order->total, 0, ',', '.') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card bg-light">
+                                    <div class="card-body py-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="small">
+                                                <strong>Item:</strong> {{ $warranty->orderItem->product_name }}
+                                                @if($warranty->orderItem->variant_name)
+                                                    <span class="text-muted">({{ $warranty->orderItem->variant_name }})</span>
+                                                @endif
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                Rp {{ number_format($warranty->orderItem->price, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="fas fa-shopping-cart fa-3x text-gray-300 mb-3"></i>
+                                    <p class="text-muted">Data order tidak tersedia</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Tindakan</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('admin.warranties.download', $warranty) }}" class="btn btn-primary btn-block mb-3">
+                            <i class="fas fa-download mr-1"></i> Download Sertifikat Garansi
+                        </a>
+                        
+                        <button type="button" class="btn btn-info btn-block mb-3" data-toggle="modal" data-target="#addNoteModal">
+                            <i class="fas fa-comment mr-1"></i> {{ $warranty->notes ? 'Tambah Catatan Baru' : 'Tambah Catatan' }}
+                        </button>
+                        
+                        @if($warranty->isActive() && !$warranty->isExpired())
+                        <button type="button" class="btn btn-success btn-block mb-3" data-toggle="modal" data-target="#extendWarrantyModal">
+                            <i class="fas fa-clock mr-1"></i> Perpanjang Garansi
+                        </button>
+                        @endif
+                        
+                        <button type="button" class="btn btn-warning btn-block mb-3" data-toggle="modal" data-target="#statusModal">
+                            <i class="fas fa-edit mr-1"></i> Ubah Status Garansi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warranty Extensions -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">Riwayat Perpanjangan</h6>
+                </div>
+                <div class="card-body">
+                    @if($warranty->extensions->count() > 0)
+                        @foreach($warranty->extensions as $extension)
+                            <div class="card mb-3 {{ $extension->isPaid() ? 'border-success' : 'border-warning' }}">
+                                <div class="card-body py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="font-weight-bold mb-0">{{ $extension->months }} Bulan</h6>
+                                            <small class="text-muted">{{ $extension->created_at->format('d M Y') }}</small>
+                                        </div>
+                                        <div>
+                                            @if($extension->isPaid())
+                                                <span class="badge badge-success p-2">Lunas</span>
+                                            @else
+                                                <span class="badge badge-warning p-2">Pending</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Harga:</small>
+                                        <strong>Rp {{ number_format($extension->price, 0, ',', '.') }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">Perpanjangan Hingga:</small>
+                                        <span>{{ \Carbon\Carbon::parse($extension->new_end_date)->format('d M Y') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-calendar-times fa-4x text-gray-300"></i>
+                            </div>
+                            <p class="text-muted mb-3">Belum ada riwayat perpanjangan untuk garansi ini.</p>
+                            
+                            @if($warranty->isActive() && !$warranty->isExpired())
+                                <button type="button" class="btn btn-sm btn-outline-success" data-toggle="modal" data-target="#extendWarrantyModal">
+                                    <i class="fas fa-plus"></i> Buat Perpanjangan
+                                </button>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('admin.warranties.update-status', $warranty) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="statusModalLabel">Update Status Garansi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="is_active">Status Garansi</label>
+                            <select class="form-control" id="is_active" name="is_active">
+                                <option value="1" {{ $warranty->is_active ? 'selected' : '' }}>Aktif</option>
+                                <option value="0" {{ !$warranty->is_active ? 'selected' : '' }}>Non-Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Note Modal -->
+    <div class="modal fade" id="addNoteModal" tabindex="-1" role="dialog" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('admin.warranties.add-note', $warranty) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addNoteModalLabel">Tambah Catatan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="note">Catatan</label>
+                            <textarea class="form-control" id="note" name="note" rows="4" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Catatan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extend Warranty Modal -->
+    <div class="modal fade" id="extendWarrantyModal" tabindex="-1" role="dialog" aria-labelledby="extendWarrantyModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{{ route('admin.warranties.extend', $warranty) }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="extendWarrantyModalLabel">Perpanjang Garansi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="months">Durasi Perpanjangan</label>
+                            <select class="form-control" id="months" name="months" required>
+                                <option value="3">3 Bulan (90 hari)</option>
+                                <option value="6">6 Bulan (180 hari)</option>
+                                <option value="12">12 Bulan (360 hari)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Harga</label>
+                            <input type="number" class="form-control" id="price" name="price" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Perpanjang Garansi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

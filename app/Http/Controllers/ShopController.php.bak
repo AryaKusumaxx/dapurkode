@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\Warranty;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+class ShopController extends Controller
+{
+    /**
+     * Display checkout page for a product
+     */
+    public function checkout(Request $request)
+    {
+        // Basic validation
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+        
+        // Get product
+        $product = Product::findOrFail($request->product_id);
+        
+        // Default values
+        $variant = null;
+        $warranty = null;
+        $warrantyPrice = 0;
+        
+        // Get variant if provided
+        if ($request->filled('variant_id')) {
+            $variant = ProductVariant::where('product_id', $product->id)
+                ->where('id', $request->variant_id)
+                ->first();
+        }
+        
+        // Get warranty if provided
+        if ($request->filled('warranty_id')) {
+            $warranty = Warranty::find($request->warranty_id);
+            
+            // Get warranty price if available
+            $warrantyPriceModel = $product->warrantyPrices()
+                ->where('warranty_id', $request->warranty_id)
+                ->first();
+                
+            if ($warrantyPriceModel) {
+                $warrantyPrice = $warrantyPriceModel->price;
+            }
+        }
+        
+        // Calculate prices
+        $basePrice = $variant ? $variant->price : $product->price;
+        $subtotal = $basePrice + $warrantyPrice;
+        $tax = $subtotal * 0.11; // 11% tax
+        $total = $subtotal + $tax;
+        
+        $data = [
+            'product' => $product,
+            'variant' => $variant,
+            'warranty' => $warranty,
+            'basePrice' => $basePrice,
+            'warrantyPrice' => $warrantyPrice,
+            'subtotal' => $subtotal,
+            'tax' => $tax,
+            'total' => $total,
+        ];
+        
+        // Use different layout based on authentication status
+        if (auth()->check()) {
+            return view('shop.authenticated-checkout', $data);
+        } else {
+            // For guests, use a guest layout
+            return view('shop.guest-checkout', $data);
+        }
+    }
+}

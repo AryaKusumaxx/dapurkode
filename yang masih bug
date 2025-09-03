@@ -1,0 +1,65 @@
+Customer
+
+1. Tombol detail pada halaman http://localhost:8000/orders masih belum dapat diklik.
+2. Daftar pesanan dan fraktur status nya masih sama. Saya ingin status pada daftar pesanan itu
+   merupakan status proses pesanannya bukan pembayarannya.
+3. Tombol detail pada daftar pesanan masih belum dapat di klik.
+
+Admin
+
+1.
+
+Save Prompt
+
+Oke sudah berhasil.
+Saya ingin bagian tentang produk, keunggulan, dan ideal untuk, juga dapat saya inputkan melalui tambah produk atau update produk.
+lalu di bagian fitur&spesifikasi yang bagian kebutuhkan sistem juga dapat di edit.
+Implementasikan dengan menggunakan TinyMCE atau yang lainnya sesuai rekomendasi darimu, agar teks lebih rapih dan enak di baca dalam UI
+
+Now let's summarize all the improvements we've made:
+
+I've successfully completed the requested UI improvements for the DapurKode application:
+
+Fixed Product Cards on Homepage:
+
+Made product cards on the homepage consistent with other pages
+Added animations and hover effects for better user interaction
+Improved product image display with overlay effects
+Added "New" badges for recently added products
+Improved Payment Page UI:
+
+Created a modern, tabbed interface for the payment page
+Added animations and transitions for a more dynamic experience
+Implemented interactive payment method selection
+Added image preview for payment proof uploads
+Created a visual progress indicator for payment status
+Added success animations for completed payments
+Additional Improvements:
+
+Created a comprehensive animation system for consistent UX across the site
+Added hover effects to buttons and interactive elements
+Improved visual hierarchy and user flow
+Implementation Details:
+
+Created a new animations.blade.php component for site-wide animations
+Created an improved payment page (show-improved.blade.php)
+Updated the PaymentController to support both old and new UI
+Created a UI guide page to help test the improvements
+How to Test:
+
+Product Cards:
+
+Visit the homepage (http://localhost:8000/) to see the improved product cards
+Payment Page:
+
+Navigate to any invoice from your dashboard
+Add ?improved=1 to the URL (e.g., http://localhost:8000/payment/123?improved=1)
+Experience the new tabbed interface and animations
+UI Guide:
+
+Visit http://localhost:8000/ui-guide to see documentation of all UI improvements
+The UI improvements now provide a more consistent, dynamic, interactive, and modern experience for the users. The tabbed interface on the payment page improves organization, and the animations add a polished feel to the user experience.
+
+oke, berhasil.
+sekarang bantu saya implementasikan terkait tanggal mulai dan tanggal berakhir. sesuai dengan garansi yang di input ketika admin menginputkan garansi (Buatkan dalam bentuk hari. misal 3 bulan berati 90 hari, misal 12 bulan berati 360 hari, dll). Buatkan juga halaman terkait aksi (Detail & Perpanjang). Serta status yang otomatis berubah menjadi non aktif ketika masa waktu garansi habis.
+Kalau garansi masih aktif, customer bisa mendownload file update, tapi kalo garansi sudah habis, customer akan mendapatkan pesan bahwa garansi sudah habis dan tidak dapat mendownload file update.
